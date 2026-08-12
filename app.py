@@ -22,7 +22,7 @@ if uploaded_file is not None:
     
     prediction = model.predict(img_array)[0][0]
     
-    if prediction > 5.0:
+    if prediction >0.5:
         st.success(f"✅ REAL Image (Confidence: {prediction*100:.2f}%)")
     else:
         st.error(f"🤖 AI-Generated Image (Confidence: {(1-prediction)*100:.2f}%)")
