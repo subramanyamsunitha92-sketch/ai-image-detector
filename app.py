@@ -27,3 +27,4 @@ if uploaded_file is not None:
         st.success(f"✅ REAL Image (Confidence: {prediction*100:.2f}%)")
     else:
         st.error(f"🤖 AI-Generated Image (Confidence: {(1-prediction)*100:.2f}%)")
+st.image(img, caption='Uploaded Image', use_column_width=True)
