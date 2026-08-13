@@ -91,4 +91,33 @@ st.markdown('<div class="subtitle-text">// Scan an image to verify authenticity 
 
 model = load_model('ai_detector_model.h5')
 
-uploaded_file = st.file_uploader("Upload image for analysis...", type=)
+uploaded_file = st.file_uploader("Upload image for analysis...", type=["jpg", "jpeg", "png"])
+
+if uploaded_file is not None:
+    img = Image.open(uploaded_file).convert('RGB')
+    st.image(img, caption='Target Image', use_container_width=True)
+
+    img_resized = img.resize((32, 32))
+    img_array = image.img_to_array(img_resized)
+    img_array = np.expand_dims(img_array, axis=0)
+
+    with st.spinner('🔎 Scanning pixels for anomalies...'):
+        prediction = model.predict(img_array)[0][0]
+
+    if prediction > 0.5:
+        st.markdown(f"""
+            <div class="result-box real-box">
+                ✅ VERIFIED: REAL IMAGE<br>
+                <span style="font-size:0.9rem; font-weight:400;">Confidence: {prediction*100:.2f}%</span>
+            </div>
+        """, unsafe_allow_html=True)
+    else:
+        st.markdown(f"""
+            <div class="result-box fake-box">
+                ⚠️ ALERT: AI-GENERATED IMAGE<br>
+                <span style="font-size:0.9rem; font-weight:400;">Confidence: {(1-prediction)*100:.2f}%</span>
+            </div>
+        """, unsafe_allow_html=True)
+
+st.markdown("---")
+st.markdown('<p style="text-align:center; font-family:monospace; font-size:0.75rem; color:#484f58;">Powered by TensorFlow CNN | CIFAKE Dataset | v1.0</p>', unsafe_allow_html=True)
