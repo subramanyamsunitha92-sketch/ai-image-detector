@@ -16,7 +16,16 @@ video_base64 = get_base64_video("background.mp4")
 
 st.markdown(f"""
     <style>
-    .stApp {{
+   .stApp {{
+        background-color: transparent;
+    }}
+    [data-testid="stAppViewContainer"] {{
+        background-color: transparent;
+    }}
+    [data-testid="stHeader"] {{
+        background-color: transparent;
+    }}
+    body {{
         background-color: #0d1117;
     }}
     #bg-video {{
