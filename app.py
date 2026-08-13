@@ -3,26 +3,92 @@ import numpy as np
 from tensorflow.keras.models import load_model
 from tensorflow.keras.preprocessing import image
 from PIL import Image
+import streamlit.components.v1 as components
 
-st.set_page_config(page_title="AI Image Detector", page_icon="🔍")
+st.set_page_config(page_title="AI Threat Detector", page_icon="🛡️", layout="centered")
 
-st.title("🔍 AI vs Real Image Detector")
-st.write("Upload an image and find out if it's REAL or AI-generated!")
+# Matrix rain animated background
+components.html("""
+<canvas id="matrix" style="position:fixed; top:0; left:0; z-index:-1; opacity:0.25;"></canvas>
+<script>
+var c = document.getElementById("matrix");
+var ctx = c.getContext("2d");
+c.height = window.innerHeight;
+c.width = window.innerWidth;
+var chars = "01アイウエオカキクケコ$#@!";
+chars = chars.split("");
+var fontSize = 14;
+var columns = c.width / fontSize;
+var drops = [];
+for (var x = 0; x < columns; x++) drops[x] = 1;
+function draw() {
+    ctx.fillStyle = "rgba(0,0,0,0.05)";
+    ctx.fillRect(0, 0, c.width, c.height);
+    ctx.fillStyle = "#39ff14";
+    ctx.font = fontSize + "px monospace";
+    for (var i = 0; i < drops.length; i++) {
+        var text = chars[Math.floor(Math.random() * chars.length)];
+        ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+        if (drops[i] * fontSize > c.height && Math.random() > 0.975) drops[i] = 0;
+        drops[i]++;
+    }
+}
+setInterval(draw, 40);
+</script>
+""", height=0)
+
+st.markdown("""
+    <style>
+    .stApp {
+        background-color: #0d1117;
+    }
+    .title-text {
+        text-align: center;
+        font-family: 'Courier New', monospace;
+        font-size: 2.3rem;
+        font-weight: 800;
+        color: #39ff14;
+        text-shadow: 0 0 10px #39ff14;
+        margin-bottom: 0.3rem;
+    }
+    .subtitle-text {
+        text-align: center;
+        font-family: 'Courier New', monospace;
+        color: #8b949e;
+        font-size: 1rem;
+        margin-bottom: 2rem;
+    }
+    .result-box {
+        font-family: 'Courier New', monospace;
+        padding: 1.3rem;
+        border-radius: 8px;
+        text-align: center;
+        font-size: 1.2rem;
+        font-weight: 700;
+        margin-top: 1rem;
+        border: 1px solid;
+    }
+    .real-box {
+        background: rgba(10,31,10,0.85);
+        color: #39ff14;
+        border-color: #39ff14;
+        box-shadow: 0 0 15px rgba(57,255,20,0.3);
+    }
+    .fake-box {
+        background: rgba(42,10,10,0.85);
+        color: #ff3131;
+        border-color: #ff3131;
+        box-shadow: 0 0 15px rgba(255,49,49,0.3);
+    }
+    p, span, div, label {
+        color: #c9d1d9;
+    }
+    </style>
+""", unsafe_allow_html=True)
+
+st.markdown('<div class="title-text">🛡️ AI THREAT DETECTOR</div>', unsafe_allow_html=True)
+st.markdown('<div class="subtitle-text">// Scan an image to verify authenticity — REAL or AI-GENERATED</div>', unsafe_allow_html=True)
 
 model = load_model('ai_detector_model.h5')
 
-uploaded_file = st.file_uploader("Choose an image...", type=["jpg", "jpeg", "png"])
-
-if uploaded_file is not None:
-    img = Image.open(uploaded_file).convert('RGB')
-    st.image(img, caption='Uploaded Image', use_container_width=True)    
-    img_resized = img.resize((32, 32))
-    img_array = image.img_to_array(img_resized)
-    img_array = np.expand_dims(img_array, axis=0)
-    
-    prediction = model.predict(img_array)[0][0]
-    
-    if prediction >0.5:
-        st.success(f"✅ REAL Image (Confidence: {prediction*100:.2f}%)")
-    else:
-        st.error(f"🤖 AI-Generated Image (Confidence: {(1-prediction)*100:.2f}%)")
+uploaded_file = st.file_uploader("Upload image for analysis...", type=
