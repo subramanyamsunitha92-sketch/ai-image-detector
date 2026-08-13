@@ -3,46 +3,33 @@ import numpy as np
 from tensorflow.keras.models import load_model
 from tensorflow.keras.preprocessing import image
 from PIL import Image
-import streamlit.components.v1 as components
+import base64
 
 st.set_page_config(page_title="AI Threat Detector", page_icon="🛡️", layout="centered")
 
-# Matrix rain animated background
-components.html("""
-<canvas id="matrix" style="position:fixed; top:0; left:0; z-index:-1; opacity:0.25;"></canvas>
-<script>
-var c = document.getElementById("matrix");
-var ctx = c.getContext("2d");
-c.height = window.innerHeight;
-c.width = window.innerWidth;
-var chars = "01アイウエオカキクケコ$#@!";
-chars = chars.split("");
-var fontSize = 14;
-var columns = c.width / fontSize;
-var drops = [];
-for (var x = 0; x < columns; x++) drops[x] = 1;
-function draw() {
-    ctx.fillStyle = "rgba(0,0,0,0.05)";
-    ctx.fillRect(0, 0, c.width, c.height);
-    ctx.fillStyle = "#39ff14";
-    ctx.font = fontSize + "px monospace";
-    for (var i = 0; i < drops.length; i++) {
-        var text = chars[Math.floor(Math.random() * chars.length)];
-        ctx.fillText(text, i * fontSize, drops[i] * fontSize);
-        if (drops[i] * fontSize > c.height && Math.random() > 0.975) drops[i] = 0;
-        drops[i]++;
-    }
-}
-setInterval(draw, 40);
-</script>
-""", height=0)
+def get_base64_video(video_path):
+    with open(video_path, "rb") as f:
+        data = f.read()
+    return base64.b64encode(data).decode()
 
-st.markdown("""
+video_base64 = get_base64_video("background.mp4")
+
+st.markdown(f"""
     <style>
-    .stApp {
+    .stApp {{
         background-color: #0d1117;
-    }
-    .title-text {
+    }}
+    #bg-video {{
+        position: fixed;
+        right: 0;
+        bottom: 0;
+        min-width: 100%;
+        min-height: 100%;
+        z-index: -1;
+        object-fit: cover;
+        opacity: 0.35;
+    }}
+    .title-text {{
         text-align: center;
         font-family: 'Courier New', monospace;
         font-size: 2.3rem;
@@ -50,15 +37,15 @@ st.markdown("""
         color: #39ff14;
         text-shadow: 0 0 10px #39ff14;
         margin-bottom: 0.3rem;
-    }
-    .subtitle-text {
+    }}
+    .subtitle-text {{
         text-align: center;
         font-family: 'Courier New', monospace;
         color: #8b949e;
         font-size: 1rem;
         margin-bottom: 2rem;
-    }
-    .result-box {
+    }}
+    .result-box {{
         font-family: 'Courier New', monospace;
         padding: 1.3rem;
         border-radius: 8px;
@@ -67,23 +54,27 @@ st.markdown("""
         font-weight: 700;
         margin-top: 1rem;
         border: 1px solid;
-    }
-    .real-box {
+    }}
+    .real-box {{
         background: rgba(10,31,10,0.85);
         color: #39ff14;
         border-color: #39ff14;
         box-shadow: 0 0 15px rgba(57,255,20,0.3);
-    }
-    .fake-box {
+    }}
+    .fake-box {{
         background: rgba(42,10,10,0.85);
         color: #ff3131;
         border-color: #ff3131;
         box-shadow: 0 0 15px rgba(255,49,49,0.3);
-    }
-    p, span, div, label {
+    }}
+    p, span, div, label {{
         color: #c9d1d9;
-    }
+    }}
     </style>
+
+    <video autoplay muted loop id="bg-video">
+        <source src="data:video/mp4;base64,{video_base64}" type="video/mp4">
+    </video>
 """, unsafe_allow_html=True)
 
 st.markdown('<div class="title-text">🛡️ AI THREAT DETECTOR</div>', unsafe_allow_html=True)
