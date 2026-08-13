@@ -91,4 +91,4 @@ st.markdown('<div class="subtitle-text">// Scan an image to verify authenticity 
 
 model = load_model('ai_detector_model.h5')
 
-uploaded_file = st.file_uploader("Upload image for analysis...", type=
+uploaded_file = st.file_uploader("Upload image for analysis...", type=)
